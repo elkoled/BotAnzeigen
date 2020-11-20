@@ -15,16 +15,18 @@ namespace BotAnzeigen
         IWebDriver driver;
         String username;
         String password;
-        String test_url;
+        String searchUrl;
+        String message;
 
-        public Bot(String username, String password, String test_url)
+        public Bot(String username, String password, String searchUrl, String message)
         {
             ChromeOptions options = new ChromeOptions();
             options.AddArguments("disable-blink-features=AutomationControlled");
             driver = new ChromeDriver(AppDomain.CurrentDomain.BaseDirectory, options);
             this.username = username;
             this.password = password;
-            this.test_url = test_url;
+            this.searchUrl = searchUrl;
+            this.message = message;
         }
 
         public void login()
@@ -32,10 +34,54 @@ namespace BotAnzeigen
             try
             {
                 WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+                
                 driver.Url = "https://www.ebay-kleinanzeigen.de/m-einloggen.html";
-                fakeWaiter(5000);
+                fakeWait(5000);
+
+                //Accept cookies
                 driver.FindElement(By.Id("gdpr-banner-accept")).Click();
-                //fakeWaiter(2000);
+                fakeWait(1000);
+                
+                //Paste login
+                Console.WriteLine("Filling username");
+                driver.FindElement(By.Id("login-email")).SendKeys(username);
+                fakeWait(500);
+                //Paste pw
+                Console.WriteLine("Filling password");
+                driver.FindElement(By.Id("login-password")).SendKeys(password);
+                fakeWait(500);
+                Console.WriteLine("Logging in");
+                driver.FindElement(By.Id("login-submit")).Click();
+                fakeWait(10000);
+                
+                Console.WriteLine("Navigating to search URL");
+                driver.Url = searchUrl;
+                fakeWait(10000);
+
+                Console.WriteLine("Searching for results");
+                var adItems = driver.FindElements(By.ClassName("aditem"));
+                /*
+                if (adItems.Count > 0)
+                {
+                    Console.WriteLine("Found " + adItems.Count + " results on this page\n");
+
+                    foreach (IWebElement element in adItems)
+                    {
+                        Console.WriteLine(element.FindElement(By.XPath("//div[contains(@class, 'ellipsis')]")).Text);
+                        
+                        String output = "ID: ";
+                        output += element.FindElement(By.Name("data-adid")).Text;
+                        output += "\nDescription: ";
+                        output += element.FindElement(By.ClassName("ellipsis")).Text;
+                        Console.WriteLine(output);
+                        
+                    }
+                }
+                */
+
+                //Click write message button
+                //viewad - contact - button
+
             }
             catch
             {
@@ -56,14 +102,21 @@ namespace BotAnzeigen
         }
 
         //min. 500ms
-        private void fakeWaiter(int ms)
+        private void fakeWait(int ms)
         {
-            Random rnd = new Random();
-            if (ms < 500) ms = 500;
-            int rand1 = rnd.Next(-500, 500);
-            int rand2 = rnd.Next(ms, ms + rand1);
-            Console.WriteLine("Waiting for " + rand2 + "ms");
-            driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMilliseconds(rand2);
+            try
+            {
+                Random rnd = new Random();
+                if (ms < 500) ms = 500;
+                int rand1 = rnd.Next(10, 1000);
+                int rand2 = rnd.Next(ms, ms + rand1);
+                Console.WriteLine("Waiting for " + rand2 + "ms");
+                driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMilliseconds(rand2);
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
         }
     }
 }
