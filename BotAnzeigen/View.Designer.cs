@@ -1,7 +1,7 @@
 ﻿
 namespace BotAnzeigen
 {
-    partial class Form1
+    partial class View
     {
         /// <summary>
         /// Required designer variable.
@@ -29,7 +29,7 @@ namespace BotAnzeigen
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(View));
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.btnStartBot = new System.Windows.Forms.Button();
@@ -156,7 +156,6 @@ namespace BotAnzeigen
             this.groupBox2.TabIndex = 12;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Einstellungen";
-            this.groupBox2.Enter += new System.EventHandler(this.groupBox2_Enter);
             // 
             // txtSearchUrl
             // 
@@ -209,7 +208,7 @@ namespace BotAnzeigen
             this.label3.TabIndex = 10;
             this.label3.Text = "Angefragte Anzeigen";
             // 
-            // Form1
+            // View
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -221,8 +220,9 @@ namespace BotAnzeigen
             this.Controls.Add(this.btnStartBot);
             this.Controls.Add(this.groupBox1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "Form1";
+            this.Name = "View";
             this.Text = "BotAnzeigen";
+            this.Load += new System.EventHandler(this.View_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);

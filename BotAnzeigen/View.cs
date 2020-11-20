@@ -1,22 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using BotAnzeigen.Core.service;
 using Newtonsoft.Json;
 
 namespace BotAnzeigen
 {
-    public partial class Form1 : Form
+    public partial class View : Form
     {
-        Bot bot;
-        SaveData saveData;
-        String saveDataPath = "saveData.json";
-        public Form1()
+        private BotService bot;
+        private SaveData saveData;
+        private string saveDataPath = "saveData.json";
+
+        public View()
         {
             InitializeComponent();
 
@@ -27,11 +23,12 @@ namespace BotAnzeigen
             backgroundWorker1.RunWorkerCompleted += worker_RunWorkerCompleted;
 
             saveData = new SaveData();
+
             try
             {
                 if (System.IO.File.Exists(saveDataPath))
                 {
-                    String saveDataString = System.IO.File.ReadAllText(saveDataPath);
+                    string saveDataString = System.IO.File.ReadAllText(saveDataPath);
                     saveData = JsonConvert.DeserializeObject<SaveData>(saveDataString);
                     Console.WriteLine("Loaded Savedata");
                 }
@@ -64,16 +61,20 @@ namespace BotAnzeigen
         private void btnStopBot_Click(object sender, EventArgs e)
         {
             Console.WriteLine("Stopping Bot, please wait...");
+            bot.stopDriver();
             backgroundWorker1.CancelAsync();
         }
 
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e) 
         {
-            bot = new Bot(txtUsername.Text, txtPassword.Text, txtSearchUrl.Text, txtMessageText.Text);
-            bot.login();
-            System.Threading.Thread.Sleep(2000);
-            bot.stopDriver();
+            bot = new BotService(txtUsername.Text, txtPassword.Text, txtSearchUrl.Text, txtMessageText.Text);
+            bot.run();
+
+            //bot = new Bot(txtUsername.Text, txtPassword.Text, txtSearchUrl.Text, txtMessageText.Text);
+            //bot.login();
+            //System.Threading.Thread.Sleep(2000);
+            //bot.stopDriver();
 
             while (!backgroundWorker1.CancellationPending)
             {
@@ -109,7 +110,7 @@ namespace BotAnzeigen
 
         private void saveDataToJson()
         {
-            String saveDataString = JsonConvert.SerializeObject(saveData, Formatting.Indented);
+            string saveDataString = JsonConvert.SerializeObject(saveData, Formatting.Indented);
 
             System.IO.File.WriteAllText(saveDataPath, saveDataString);
             Console.WriteLine("Saved data");
@@ -135,7 +136,13 @@ namespace BotAnzeigen
             btnStopBot.Enabled = false;
         }
 
-        private void groupBox2_Enter(object sender, EventArgs e)
+        private void View_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            Console.WriteLine("Stopping Bot, please wait...");
+            bot.stopDriver();
+        }
+
+        private void View_Load(object sender, EventArgs e)
         {
 
         }
