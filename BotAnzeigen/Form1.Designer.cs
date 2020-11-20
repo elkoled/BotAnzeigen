@@ -35,20 +35,18 @@ namespace BotAnzeigen
             this.btnStartBot = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.btnStopBot = new System.Windows.Forms.Button();
-            this.listAdList = new System.Windows.Forms.ListBox();
+            this.listBoxAdList = new System.Windows.Forms.ListBox();
             this.labelUsername = new System.Windows.Forms.Label();
             this.labelSearchURL = new System.Windows.Forms.Label();
             this.labelPassword = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.checkSaveSettings = new System.Windows.Forms.CheckBox();
             this.txtSearchUrl = new System.Windows.Forms.TextBox();
             this.txtPassword = new System.Windows.Forms.TextBox();
             this.txtUsername = new System.Windows.Forms.TextBox();
             this.txtMessageText = new System.Windows.Forms.TextBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.label7 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.txtLog = new System.Windows.Forms.TextBox();
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -57,9 +55,9 @@ namespace BotAnzeigen
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(13, 21);
+            this.label1.Location = new System.Drawing.Point(13, 20);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(486, 65);
+            this.label1.Size = new System.Drawing.Size(486, 104);
             this.label1.TabIndex = 0;
             this.label1.Text = resources.GetString("label1.Text");
             // 
@@ -68,7 +66,7 @@ namespace BotAnzeigen
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(602, 98);
+            this.groupBox1.Size = new System.Drawing.Size(602, 127);
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Anleitung";
@@ -77,7 +75,7 @@ namespace BotAnzeigen
             // 
             this.btnStartBot.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
             this.btnStartBot.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnStartBot.Location = new System.Drawing.Point(12, 465);
+            this.btnStartBot.Location = new System.Drawing.Point(12, 494);
             this.btnStartBot.Name = "btnStartBot";
             this.btnStartBot.Size = new System.Drawing.Size(109, 42);
             this.btnStartBot.TabIndex = 2;
@@ -97,7 +95,8 @@ namespace BotAnzeigen
             // btnStopBot
             // 
             this.btnStopBot.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
-            this.btnStopBot.Location = new System.Drawing.Point(127, 465);
+            this.btnStopBot.Enabled = false;
+            this.btnStopBot.Location = new System.Drawing.Point(127, 494);
             this.btnStopBot.Name = "btnStopBot";
             this.btnStopBot.Size = new System.Drawing.Size(109, 42);
             this.btnStopBot.TabIndex = 5;
@@ -105,13 +104,14 @@ namespace BotAnzeigen
             this.btnStopBot.UseVisualStyleBackColor = false;
             this.btnStopBot.Click += new System.EventHandler(this.btnStopBot_Click);
             // 
-            // listAdList
+            // listBoxAdList
             // 
-            this.listAdList.FormattingEnabled = true;
-            this.listAdList.Location = new System.Drawing.Point(296, 37);
-            this.listAdList.Name = "listAdList";
-            this.listAdList.Size = new System.Drawing.Size(292, 134);
-            this.listAdList.TabIndex = 8;
+            this.listBoxAdList.FormattingEnabled = true;
+            this.listBoxAdList.ImeMode = System.Windows.Forms.ImeMode.On;
+            this.listBoxAdList.Location = new System.Drawing.Point(15, 37);
+            this.listBoxAdList.Name = "listBoxAdList";
+            this.listBoxAdList.Size = new System.Drawing.Size(573, 134);
+            this.listBoxAdList.TabIndex = 8;
             // 
             // labelUsername
             // 
@@ -125,7 +125,7 @@ namespace BotAnzeigen
             // labelSearchURL
             // 
             this.labelSearchURL.AutoSize = true;
-            this.labelSearchURL.Location = new System.Drawing.Point(12, 94);
+            this.labelSearchURL.Location = new System.Drawing.Point(11, 109);
             this.labelSearchURL.Name = "labelSearchURL";
             this.labelSearchURL.Size = new System.Drawing.Size(57, 13);
             this.labelSearchURL.TabIndex = 10;
@@ -142,7 +142,6 @@ namespace BotAnzeigen
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.checkSaveSettings);
             this.groupBox2.Controls.Add(this.txtSearchUrl);
             this.groupBox2.Controls.Add(this.txtPassword);
             this.groupBox2.Controls.Add(this.txtUsername);
@@ -151,27 +150,17 @@ namespace BotAnzeigen
             this.groupBox2.Controls.Add(this.labelPassword);
             this.groupBox2.Controls.Add(this.label2);
             this.groupBox2.Controls.Add(this.txtMessageText);
-            this.groupBox2.Location = new System.Drawing.Point(12, 116);
+            this.groupBox2.Location = new System.Drawing.Point(12, 145);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(602, 155);
             this.groupBox2.TabIndex = 12;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Einstellungen";
-            // 
-            // checkSaveSettings
-            // 
-            this.checkSaveSettings.AutoSize = true;
-            this.checkSaveSettings.Location = new System.Drawing.Point(48, 124);
-            this.checkSaveSettings.Name = "checkSaveSettings";
-            this.checkSaveSettings.Size = new System.Drawing.Size(138, 17);
-            this.checkSaveSettings.TabIndex = 15;
-            this.checkSaveSettings.Text = "Einstellungen speichern";
-            this.checkSaveSettings.UseVisualStyleBackColor = true;
-            this.checkSaveSettings.CheckedChanged += new System.EventHandler(this.checkSaveSettings_CheckedChanged);
+            this.groupBox2.Enter += new System.EventHandler(this.groupBox2_Enter);
             // 
             // txtSearchUrl
             // 
-            this.txtSearchUrl.Location = new System.Drawing.Point(78, 91);
+            this.txtSearchUrl.Location = new System.Drawing.Point(77, 106);
             this.txtSearchUrl.Name = "txtSearchUrl";
             this.txtSearchUrl.Size = new System.Drawing.Size(126, 20);
             this.txtSearchUrl.TabIndex = 14;
@@ -180,6 +169,7 @@ namespace BotAnzeigen
             // 
             this.txtPassword.Location = new System.Drawing.Point(77, 55);
             this.txtPassword.Name = "txtPassword";
+            this.txtPassword.PasswordChar = '*';
             this.txtPassword.Size = new System.Drawing.Size(126, 20);
             this.txtPassword.TabIndex = 13;
             // 
@@ -201,50 +191,30 @@ namespace BotAnzeigen
             // 
             // groupBox3
             // 
-            this.groupBox3.Controls.Add(this.label7);
             this.groupBox3.Controls.Add(this.label3);
-            this.groupBox3.Controls.Add(this.txtLog);
-            this.groupBox3.Controls.Add(this.listAdList);
-            this.groupBox3.Location = new System.Drawing.Point(12, 277);
+            this.groupBox3.Controls.Add(this.listBoxAdList);
+            this.groupBox3.Location = new System.Drawing.Point(12, 306);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(602, 182);
             this.groupBox3.TabIndex = 13;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Logging";
             // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(7, 21);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(25, 13);
-            this.label7.TabIndex = 11;
-            this.label7.Text = "Log";
-            // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(296, 21);
+            this.label3.Location = new System.Drawing.Point(13, 21);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(106, 13);
             this.label3.TabIndex = 10;
             this.label3.Text = "Angefragte Anzeigen";
-            // 
-            // txtLog
-            // 
-            this.txtLog.Location = new System.Drawing.Point(10, 37);
-            this.txtLog.Multiline = true;
-            this.txtLog.Name = "txtLog";
-            this.txtLog.ReadOnly = true;
-            this.txtLog.Size = new System.Drawing.Size(275, 134);
-            this.txtLog.TabIndex = 9;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(626, 521);
+            this.ClientSize = new System.Drawing.Size(626, 543);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.btnStopBot);
@@ -270,20 +240,18 @@ namespace BotAnzeigen
         private System.Windows.Forms.Button btnStartBot;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button btnStopBot;
-        private System.Windows.Forms.ListBox listAdList;
+        private System.Windows.Forms.ListBox listBoxAdList;
         private System.Windows.Forms.Label labelUsername;
         private System.Windows.Forms.Label labelSearchURL;
         private System.Windows.Forms.Label labelPassword;
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.CheckBox checkSaveSettings;
         private System.Windows.Forms.TextBox txtSearchUrl;
         private System.Windows.Forms.TextBox txtPassword;
         private System.Windows.Forms.TextBox txtUsername;
         private System.Windows.Forms.TextBox txtMessageText;
         private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TextBox txtLog;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
     }
 }
 

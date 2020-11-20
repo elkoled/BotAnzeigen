@@ -118,13 +118,22 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="label1.Text" xml:space="preserve">
-    <value>1. Ebay Kleinanzeigen Username und Passwort eintragen
+    <value>1. Ebay Kleinanzeigen Username und Passwort eintragen. 
 2. Auf Kleinanzeigen.de eine Suche starten, gewünschte Kategorie, Filter und Suchgebiet auswählen.
 3. URL aus Browser kopieren und im Such-URL Feld eintragen
 4. Nachrichtentext eintragen, dieser wird statisch an jede neue Anzeige gesendet
-5. Bot starten
+5. Bot starten. 
+
+Einstellungen werden gespeichert. Zum Löschen der Daten die Datei "saveData.json" entfernen.
+
 </value>
   </data>
+  <metadata name="backgroundWorker1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>17, 17</value>
+  </metadata>
+  <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>25</value>
+  </metadata>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
