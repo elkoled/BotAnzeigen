@@ -70,7 +70,7 @@ namespace BotAnzeigen
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e) 
         {
-            bot = new Bot(txtUsername.Text, txtPassword.Text, txtSearchUrl.Text);
+            bot = new Bot(txtUsername.Text, txtPassword.Text, txtSearchUrl.Text, txtMessageText.Text);
             bot.login();
             System.Threading.Thread.Sleep(2000);
             bot.stopDriver();
