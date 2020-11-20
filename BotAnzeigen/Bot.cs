@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BotAnzeigen
 {
