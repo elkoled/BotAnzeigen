@@ -1,16 +1,14 @@
-﻿using OpenQA.Selenium;
+﻿using BotAnzeigen.Core.model;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+
 
 namespace BotAnzeigen.Core.service
-{
+{ 
     public class BotService
     {
         IWebDriver driver;
@@ -18,6 +16,7 @@ namespace BotAnzeigen.Core.service
         string password;
         string searchUrl;
         string message;
+        List<AdItem> items = new List<AdItem>();
 
         public BotService(
             string username, 
@@ -88,11 +87,13 @@ namespace BotAnzeigen.Core.service
 
             foreach ( var element in adItems)
             {
-
+                var item = new AdItem();
+                item.title = element.FindElement(By.ClassName("text-module-begin")).Text;
+                items.Add(item);
                 //text-module-begin
-                Console.WriteLine(element);
-                //Console.WriteLine(element.FindElement(By.ClassName("text-module-begin")).Text);
-            }  
+                //Console.WriteLine(element);
+                Console.WriteLine(element.FindElement(By.ClassName("text-module-begin")).Text);
+            }
 
             /*
             if (adItems.Count > 0)
@@ -117,10 +118,20 @@ namespace BotAnzeigen.Core.service
             //viewad - contact - button
 
         }
-        public string getAd()
+
+
+        public void reportAds(Action<List<AdItem>> callback)
         {
-            Random rand = new Random();
-            return "test";
+            callback(items);
+        }
+
+        public string[] getAds()
+        {
+            var ads = new List<string>();
+            foreach(var item in items){
+                ads.Add(item.title);
+            }
+            return ads.ToArray();
         }
 
         public void stopDriver()

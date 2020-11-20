@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using BotAnzeigen.Core.model;
+using System.Collections.Generic;
 
 namespace BotAnzeigen
 {
@@ -8,10 +9,10 @@ namespace BotAnzeigen
         public string username;
         public string searchUrl;
         public string messageText;
-        public List<string> ads;
+        public List<AdItem> ads;
         public SaveData()
         {
-            ads = new List<string>();
+            ads = new List<AdItem>();
         }
     }
 }

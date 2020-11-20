@@ -65,7 +65,6 @@ namespace BotAnzeigen
             backgroundWorker1.CancelAsync();
         }
 
-
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e) 
         {
             bot = new BotService(txtUsername.Text, txtPassword.Text, txtSearchUrl.Text, txtMessageText.Text);
@@ -78,8 +77,9 @@ namespace BotAnzeigen
 
             while (!backgroundWorker1.CancellationPending)
             {
-                System.Threading.Thread.Sleep(2000);
-                //saveData.ads.Add(bot.getAd());
+                backgroundWorker1.ReportProgress(0);
+                System.Threading.Thread.Sleep(20000);
+                //saveData.ads = bot.getAds();
                 //backgroundWorker1.ReportProgress(0);
               
                 //saveDataToJson();
@@ -97,7 +97,7 @@ namespace BotAnzeigen
         {
             //listBoxAdList
             listBoxAdList.DataSource = null;
-            listBoxAdList.DataSource = saveData.ads;
+            listBoxAdList.DataSource = bot.getAds();
             listBoxAdList.SelectedIndex = listBoxAdList.Items.Count - 1;
 
         }
