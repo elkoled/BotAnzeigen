@@ -77,6 +77,7 @@ namespace BotAnzeigen
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e) 
         {
+#warning maybe implement a updateDelay field in GUI?
             bot = new BotService(data,30);
             bot.run();
 
