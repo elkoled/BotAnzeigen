@@ -58,17 +58,17 @@ namespace BotAnzeigen.Core.service
                 driver.FindElement(By.Id("gdpr-banner-accept")).Click();
                 fakeWait(1000);
 
-                ////Paste login
-                //Console.WriteLine("Filling username");
-                //driver.FindElement(By.Id("login-email")).SendKeys(username);
-                //fakeWait(500);
-                ////Paste pw
-                //Console.WriteLine("Filling password");
-                //driver.FindElement(By.Id("login-password")).SendKeys(password);
-                //fakeWait(500);
-                //Console.WriteLine("Logging in");
-                //driver.FindElement(By.Id("login-submit")).Click();
-                //fakeWait(10000);
+                //Paste login
+                Console.WriteLine("Filling username");
+                driver.FindElement(By.Id("login-email")).SendKeys(data.username);
+                fakeWait(500);
+                //Paste pw
+                Console.WriteLine("Filling password");
+                driver.FindElement(By.Id("login-password")).SendKeys(data.password);
+                fakeWait(500);
+                Console.WriteLine("Logging in");
+                driver.FindElement(By.Id("login-submit")).Click();
+                fakeWait(10000);
             }
             catch
             {
@@ -120,12 +120,29 @@ namespace BotAnzeigen.Core.service
 
         private void writeMessagesToSeller()
         {
+            foreach(AdItem adItem in data.adItems)
+            {
+                //Only sent message if not already messaged
+                if(adItem.messageSent == false)
+                {
+                    Console.WriteLine("Sending message to item: " + adItem.title);
+                    Console.WriteLine("Navigating to item URL");
+                    driver.Url = adItem.url;
+                    //ID only exists when logged in
+                    driver.FindElement(By.Id("viewad-contact-button")).Click();
+                    fakeWait(1000);
+#warning Find element message-box and send-button, fill message, click send
 
+                    //set sent message to true
+                    adItem.messageSent = true;
+                }
+            }
         }
 
         public void reportAds(Action<List<AdItem>> callback)
         {
             callback(data.adItems);
+            fakeWait(10000);
         }
 
         public List<AdItem> getAdItems()
@@ -149,7 +166,7 @@ namespace BotAnzeigen.Core.service
             if (ms < 500) ms = 500;
             int rand1 = rnd.Next(10, 1000);
             int rand2 = rnd.Next(ms, ms + rand1);
-            Console.WriteLine("Waiting for " + rand2 + "ms");
+            Console.WriteLine("Waiting for max. " + rand2 + "ms");
             driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMilliseconds(rand2);
         }
     }
