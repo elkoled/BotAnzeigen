@@ -1,5 +1,6 @@
 # BotAnzeigen
-v.1.0.0
+### keep it secret !!!!
+v.1.0.0 
 
 # Requirements
 * Google Chrome v87 or newer
