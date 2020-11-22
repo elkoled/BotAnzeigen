@@ -1,5 +1,5 @@
 # BotAnzeigen
-Windows Forms Application
+v.1.0.0
 
 # Requirements
 * Google Chrome v87 or newer
