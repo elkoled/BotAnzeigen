@@ -177,11 +177,6 @@ namespace BotAnzeigen.Core.service
             }
         }
 
-        public void reportAds(Action<List<AdItem>> callback)
-        {
-            callback(data.adItems);
-            fakeWait(10000);
-        }
 
         public List<AdItem> getAdItems()
         {
