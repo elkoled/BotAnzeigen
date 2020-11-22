@@ -1,5 +1,4 @@
 # BotAnzeigen
-### keep it secret !!!!
 v.1.0.0 
 
 # Requirements
