@@ -121,12 +121,11 @@
     <value>1. Ebay Kleinanzeigen Username und Passwort eintragen. 
 2. Auf Kleinanzeigen.de eine Suche starten, gewünschte Kategorie, Filter und Suchgebiet auswählen.
 3. URL aus Browser kopieren und im Such-URL Feld eintragen
-4. Nachrichtentext eintragen, dieser wird statisch an jede neue Anzeige gesendet
-5. Bot starten. 
+4. Nachrichtentext eintragen, dieser wird an jede neue Anzeige gesendet
+5. Update Interval in Sekunden eintragen. nach dieser Zeit wird nach neuen Anzeigen gesucht.
+6. Bot starten. 
 
-Einstellungen werden gespeichert. Zum Löschen der Daten die Datei "saveData.json" entfernen.
-
-</value>
+Einstellungen werden gespeichert. Zum Löschen der Daten die Datei "saveData.json" entfernen.</value>
   </data>
   <metadata name="backgroundWorker1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>

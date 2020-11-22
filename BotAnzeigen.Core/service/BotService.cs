@@ -13,17 +13,17 @@ namespace BotAnzeigen.Core.service
     {
         IWebDriver driver;
         Data data;
-        int checkInterval;
         bool isRunning = false;
         /// <summary>
         /// 
         /// </summary>
         /// <param name="data"></param>
         /// <param name="checkInterval">Delay between checking for new ads. Has to be >=30s for performance reasons</param>
-        public BotService(Data data, int checkInterval)
+        public BotService(Data data)
         {
             this.data = data;
-            if (checkInterval >= 30) this.checkInterval = checkInterval;
+
+            if (data.updateInterval < 30) this.data.updateInterval = 30;
         }
 
         public void run()
@@ -40,8 +40,8 @@ namespace BotAnzeigen.Core.service
             {
                 searchItems();
                 writeMessagesToSeller();
-                Console.WriteLine("Waiting for " + checkInterval + "s until next check");
-                System.Threading.Thread.Sleep(checkInterval*1000);
+                Console.WriteLine("Waiting for " + data.updateInterval + "s until next check\n");
+                System.Threading.Thread.Sleep(data.updateInterval*1000);
             }
             
         }
@@ -61,11 +61,11 @@ namespace BotAnzeigen.Core.service
                 //Paste login
                 Console.WriteLine("Filling username");
                 driver.FindElement(By.Id("login-email")).SendKeys(data.username);
-                fakeWait(500);
+                fakeWait(1000);
                 //Paste pw
                 Console.WriteLine("Filling password");
                 driver.FindElement(By.Id("login-password")).SendKeys(data.password);
-                fakeWait(500);
+                fakeWait(1000);
                 Console.WriteLine("Logging in");
                 driver.FindElement(By.Id("login-submit")).Click();
                 fakeWait(10000);
@@ -88,6 +88,7 @@ namespace BotAnzeigen.Core.service
             Console.WriteLine("Searching for results");
             ReadOnlyCollection<IWebElement> adItems = driver.FindElements(By.ClassName("aditem"));
 
+            bool anyNewItem = false;
             foreach (var element in adItems)
             {
                 bool duplicate = false;
@@ -107,15 +108,17 @@ namespace BotAnzeigen.Core.service
                 }
 
                 if(duplicate==false)
-                { 
+                {
+                    anyNewItem = true;
                     data.adItems.Add(foundItem);
                     Console.WriteLine("Found new item:");
-                    Console.WriteLine(foundItem.id);
+                    //Console.WriteLine(foundItem.id);
                     Console.WriteLine(foundItem.title);
-                    Console.WriteLine(foundItem.url);
+                    //Console.WriteLine(foundItem.url);
                     Console.WriteLine("\n");
                 }
             }
+            if (anyNewItem == false) Console.WriteLine("-> No new items");
         }
 
         private void writeMessagesToSeller()
@@ -128,11 +131,46 @@ namespace BotAnzeigen.Core.service
                     Console.WriteLine("Sending message to item: " + adItem.title);
                     Console.WriteLine("Navigating to item URL");
                     driver.Url = adItem.url;
-                    //ID only exists when logged in
-                    driver.FindElement(By.Id("viewad-contact-button")).Click();
-                    fakeWait(1000);
-#warning Find element message-box and send-button, fill message, click send
+                    fakeWait(3000);
+                    //Wait for popup to maybe appear
+                    System.Threading.Thread.Sleep(1000);
 
+                    try
+                    {
+                        //Search for popup close button and click it
+                        driver.FindElement(By.XPath("//*[@type='button' and @class='mfp-close']")).Click();
+                        Console.WriteLine("Found warning popup, closing popup");
+                        System.Threading.Thread.Sleep(1000);
+                    }
+                    catch(NoSuchElementException)
+                    {
+                        Console.WriteLine("No warning popup found, that is good");
+                    }
+                    fakeWait(1000);
+                    //Element only exists when logged in. Fill message window
+                    try
+                    {
+                        driver.FindElement(By.XPath("//textarea[@name='message' and @class='viewad-contact-message']")).SendKeys(data.messageText);
+                    }
+                    catch(NoSuchElementException)
+                    {
+                        Console.WriteLine("Message box not found");
+                    }
+                    fakeWait(1000);
+                    try
+                    {
+#if DEBUG
+                        driver.FindElement(By.XPath("//button[@class='button viewad-contact-submit taller' and @type='submit']"));
+#else
+                        IWebElement button = driver.FindElement(By.XPath("//button[@class='button viewad-contact-submit taller' and @type='submit']")).Click();
+#endif
+                    }
+                    catch(NoSuchElementException)
+                    {
+                        Console.WriteLine("Button not found");
+                    }
+                    fakeWait(2000);
+                    Console.WriteLine("Successfully sent message!\n");   
                     //set sent message to true
                     adItem.messageSent = true;
                 }
@@ -157,17 +195,16 @@ namespace BotAnzeigen.Core.service
         }
 
         /// <summary>
-        /// simulate waiting, min. 500ms.
+        /// simulate waiting, min. 1000ms.
         /// </summary>
         /// <param name="ms"></param>
         private void fakeWait(int ms)
         {
             Random rnd = new Random();
-            if (ms < 500) ms = 500;
-            int rand1 = rnd.Next(10, 1000);
-            int rand2 = rnd.Next(ms, ms + rand1);
-            Console.WriteLine("Waiting for max. " + rand2 + "ms");
-            driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMilliseconds(rand2);
+            if (ms < 1000) ms = 1000;
+            int randDelay = ms + rnd.Next(-500, 1000);
+            Console.WriteLine("<delay> for max. " + randDelay + "ms");
+            driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMilliseconds(randDelay);
         }
     }
 }

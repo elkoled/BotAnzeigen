@@ -9,6 +9,7 @@ namespace BotAnzeigen
         public string username;
         public string searchUrl;
         public string messageText;
+        public int updateInterval;
         public List<AdItem> adItems = new List<AdItem>();
     }
 }

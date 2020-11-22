@@ -36,6 +36,7 @@ namespace BotAnzeigen
                 txtPassword.Text = data.password;
                 txtSearchUrl.Text = data.searchUrl;
                 txtUsername.Text = data.username;
+                txtUpdateInterval.Text = data.updateInterval.ToString();
                 listBoxAdList.DataSource = getAdItemTitles(data.adItems);
 
             }
@@ -47,15 +48,27 @@ namespace BotAnzeigen
 
         private void btnStartBot_Click(object sender, EventArgs e)
         {
-            if(txtMessageText.Text!="" && txtPassword.Text!="" && txtSearchUrl.Text!="" && txtUsername.Text!="")
+            if(txtMessageText.Text!="" && 
+               txtPassword.Text!=""    && 
+               txtSearchUrl.Text!=""   && 
+               txtUsername.Text!=""    && 
+               txtUpdateInterval.Text!="")
             {
 
-            
-                disableInputs();
                 data.messageText = txtMessageText.Text;
                 data.password = txtPassword.Text;
                 data.searchUrl = txtSearchUrl.Text;
                 data.username = txtUsername.Text;
+                try
+                {
+                    data.updateInterval = Int32.Parse(txtUpdateInterval.Text);
+                }
+                catch
+                {
+                    MessageBox.Show("Update Interval erlaubt nur Zahlen!", "Was machen Sachen?");
+                    return;
+                }
+                disableInputs();
                 saveDataToJson();
 
                 backgroundWorker1.RunWorkerAsync();
@@ -64,7 +77,6 @@ namespace BotAnzeigen
             {
                 MessageBox.Show("Alle Felder ausfüllen!", "Was machen Sachen?");
             }
-
         }
 
         private void btnStopBot_Click(object sender, EventArgs e)
@@ -77,36 +89,32 @@ namespace BotAnzeigen
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e) 
         {
-#warning maybe implement a updateDelay field in GUI?
-            bot = new BotService(data,30);
+            bot = new BotService(data);
             bot.run();
-
-            //bot = new Bot(txtUsername.Text, txtPassword.Text, txtSearchUrl.Text, txtMessageText.Text);
-            //bot.login();
-            //System.Threading.Thread.Sleep(2000);
-            //bot.stopDriver();
 
             while (!backgroundWorker1.CancellationPending)
             {
+#warning implement callback
                 backgroundWorker1.ReportProgress(0);
                 System.Threading.Thread.Sleep(2000);
-
             }
             if (backgroundWorker1.CancellationPending)
             {
                 Console.WriteLine("Bot stopped");
                 e.Cancel = true;
             }
-
         }
 
         private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            //listBoxAdList
+            Console.WriteLine("Updating listBox...");
+            List<AdItem> aditemsTemp = bot.getAdItems();
+            data.adItems = aditemsTemp;
+
             listBoxAdList.DataSource = null;
-            listBoxAdList.DataSource = getAdItemTitles(bot.getAdItems());
+            listBoxAdList.DataSource = getAdItemTitles(aditemsTemp);
             listBoxAdList.SelectedIndex = listBoxAdList.Items.Count - 1;
-            data.adItems = bot.getAdItems();
+            
             saveDataToJson();
 
         }
@@ -142,6 +150,7 @@ namespace BotAnzeigen
             txtPassword.Enabled = false;
             txtMessageText.Enabled = false;
             txtSearchUrl.Enabled = false;
+            txtUpdateInterval.Enabled = false;
             btnStartBot.Enabled = false;
             btnStopBot.Enabled = true;
         }
@@ -152,6 +161,7 @@ namespace BotAnzeigen
             txtPassword.Enabled = true;
             txtMessageText.Enabled = true;
             txtSearchUrl.Enabled = true;
+            txtUpdateInterval.Enabled = true;
             btnStartBot.Enabled = true;
             btnStopBot.Enabled = false;
         }

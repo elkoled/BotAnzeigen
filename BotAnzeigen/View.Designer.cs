@@ -47,6 +47,8 @@ namespace BotAnzeigen
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.label3 = new System.Windows.Forms.Label();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.txtUpdateInterval = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -55,7 +57,7 @@ namespace BotAnzeigen
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(13, 20);
+            this.label1.Location = new System.Drawing.Point(11, 19);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(486, 104);
             this.label1.TabIndex = 0;
@@ -66,7 +68,7 @@ namespace BotAnzeigen
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(602, 127);
+            this.groupBox1.Size = new System.Drawing.Size(602, 132);
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Anleitung";
@@ -125,7 +127,7 @@ namespace BotAnzeigen
             // labelSearchURL
             // 
             this.labelSearchURL.AutoSize = true;
-            this.labelSearchURL.Location = new System.Drawing.Point(11, 109);
+            this.labelSearchURL.Location = new System.Drawing.Point(11, 84);
             this.labelSearchURL.Name = "labelSearchURL";
             this.labelSearchURL.Size = new System.Drawing.Size(57, 13);
             this.labelSearchURL.TabIndex = 10;
@@ -142,6 +144,8 @@ namespace BotAnzeigen
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.txtUpdateInterval);
+            this.groupBox2.Controls.Add(this.label4);
             this.groupBox2.Controls.Add(this.txtSearchUrl);
             this.groupBox2.Controls.Add(this.txtPassword);
             this.groupBox2.Controls.Add(this.txtUsername);
@@ -159,7 +163,7 @@ namespace BotAnzeigen
             // 
             // txtSearchUrl
             // 
-            this.txtSearchUrl.Location = new System.Drawing.Point(77, 106);
+            this.txtSearchUrl.Location = new System.Drawing.Point(77, 81);
             this.txtSearchUrl.Name = "txtSearchUrl";
             this.txtSearchUrl.Size = new System.Drawing.Size(126, 20);
             this.txtSearchUrl.TabIndex = 14;
@@ -208,6 +212,22 @@ namespace BotAnzeigen
             this.label3.TabIndex = 10;
             this.label3.Text = "Angefragte Anzeigen";
             // 
+            // txtUpdateInterval
+            // 
+            this.txtUpdateInterval.Location = new System.Drawing.Point(123, 121);
+            this.txtUpdateInterval.Name = "txtUpdateInterval";
+            this.txtUpdateInterval.Size = new System.Drawing.Size(80, 20);
+            this.txtUpdateInterval.TabIndex = 16;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(11, 124);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(106, 13);
+            this.label4.TabIndex = 15;
+            this.label4.Text = "Update Interval (sec)";
+            // 
             // View
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -252,6 +272,8 @@ namespace BotAnzeigen
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.Label label3;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private System.Windows.Forms.TextBox txtUpdateInterval;
+        private System.Windows.Forms.Label label4;
     }
 }
 
