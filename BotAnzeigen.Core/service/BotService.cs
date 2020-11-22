@@ -162,7 +162,7 @@ namespace BotAnzeigen.Core.service
 #if DEBUG
                         driver.FindElement(By.XPath("//button[@class='button viewad-contact-submit taller' and @type='submit']"));
 #else
-                        IWebElement button = driver.FindElement(By.XPath("//button[@class='button viewad-contact-submit taller' and @type='submit']")).Click();
+                        driver.FindElement(By.XPath("//button[@class='button viewad-contact-submit taller' and @type='submit']")).Click();
 #endif
                     }
                     catch(NoSuchElementException)
