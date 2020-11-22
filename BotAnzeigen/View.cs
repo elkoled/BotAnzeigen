@@ -174,9 +174,5 @@ namespace BotAnzeigen
             bot.stop();
         }
 
-        private void View_Load(object sender, EventArgs e)
-        {
-
-        }
     }
 }
