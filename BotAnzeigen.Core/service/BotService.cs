@@ -12,35 +12,38 @@ namespace BotAnzeigen.Core.service
     public class BotService
     {
         IWebDriver driver;
-        string username;
-        string password;
-        string searchUrl;
-        string message;
-        List<AdItem> items = new List<AdItem>();
-
-        public BotService(
-            string username, 
-            string password, 
-            string searchUrl, 
-            string message)
+        Data data;
+        int checkInterval;
+        bool isRunning = false;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="checkInterval">Delay between checking for new ads. Has to be >=30s for performance reasons</param>
+        public BotService(Data data, int checkInterval)
         {
-            this.username = username;
-            this.password = password;
-            this.searchUrl = searchUrl;
-            this.message = message;
+            this.data = data;
+            if (checkInterval >= 30) this.checkInterval = checkInterval;
         }
 
         public void run()
         {
+            isRunning = true;
             ChromeOptions options = new ChromeOptions();
             options.AddArguments("disable-blink-features=AutomationControlled");
             driver = new ChromeDriver(AppDomain.CurrentDomain.BaseDirectory, options);
+            driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMilliseconds(10);
 
-            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
-
-            //login();
-
-            searchItems();
+#warning Maybe check each cycle if still logged in?
+            login();
+            while (isRunning == true)
+            {
+                searchItems();
+                writeMessagesToSeller();
+                Console.WriteLine("Waiting for " + checkInterval + "s until next check");
+                System.Threading.Thread.Sleep(checkInterval*1000);
+            }
+            
         }
 
 
@@ -49,25 +52,23 @@ namespace BotAnzeigen.Core.service
             try
             {
                 driver.Url = "https://www.ebay-kleinanzeigen.de/m-einloggen.html";
-                fakeWait(5000);
+                fakeWait(10000);
 
                 //Accept cookies
                 driver.FindElement(By.Id("gdpr-banner-accept")).Click();
                 fakeWait(1000);
 
-                //Paste login
-                Console.WriteLine("Filling username");
-                driver.FindElement(By.Id("login-email")).SendKeys(username);
-                fakeWait(500);
-                //Paste pw
-                Console.WriteLine("Filling password");
-                driver.FindElement(By.Id("login-password")).SendKeys(password);
-                fakeWait(500);
-                Console.WriteLine("Logging in");
-                driver.FindElement(By.Id("login-submit")).Click();
-                fakeWait(10000);
-
-               
+                ////Paste login
+                //Console.WriteLine("Filling username");
+                //driver.FindElement(By.Id("login-email")).SendKeys(username);
+                //fakeWait(500);
+                ////Paste pw
+                //Console.WriteLine("Filling password");
+                //driver.FindElement(By.Id("login-password")).SendKeys(password);
+                //fakeWait(500);
+                //Console.WriteLine("Logging in");
+                //driver.FindElement(By.Id("login-submit")).Click();
+                //fakeWait(10000);
             }
             catch
             {
@@ -79,65 +80,63 @@ namespace BotAnzeigen.Core.service
         private void searchItems()
         {
             Console.WriteLine("Navigating to search URL");
-            driver.Url = searchUrl;
+            driver.Url = data.searchUrl;
             fakeWait(10000);
-
+            //Add sleep time for all items to load (otherwise some titles will be empty)
+            System.Threading.Thread.Sleep(2000);
+           
             Console.WriteLine("Searching for results");
             ReadOnlyCollection<IWebElement> adItems = driver.FindElements(By.ClassName("aditem"));
 
-            foreach ( var element in adItems)
+            foreach (var element in adItems)
             {
-                var item = new AdItem();
-                item.title = element.FindElement(By.ClassName("text-module-begin")).Text;
-                items.Add(item);
-                //text-module-begin
-                //Console.WriteLine(element);
-                Console.WriteLine(element.FindElement(By.ClassName("text-module-begin")).Text);
-            }
+                bool duplicate = false;
+                AdItem foundItem = new AdItem();
+                foundItem.id = element.GetAttribute("data-adid");
+                foundItem.title = element.FindElement(By.ClassName("text-module-begin")).Text;
+                foundItem.url = element.FindElement(By.ClassName("ellipsis")).GetAttribute("href");
 
-            /*
-            if (adItems.Count > 0)
-            {
-                Console.WriteLine("Found " + adItems.Count + " results on this page\n");
-
-                foreach (IWebElement element in adItems)
+                //Item already in list?
+                foreach (AdItem tempItem in data.adItems)
                 {
-                    Console.WriteLine(element.FindElement(By.XPath("//div[contains(@class, 'ellipsis')]")).Text);
+                    if (tempItem.id == foundItem.id)
+                    {
+                        duplicate = true;
+                        break;
+                    }
+                }
 
-                    String output = "ID: ";
-                    output += element.FindElement(By.Name("data-adid")).Text;
-                    output += "\nDescription: ";
-                    output += element.FindElement(By.ClassName("ellipsis")).Text;
-                    Console.WriteLine(output);
-
+                if(duplicate==false)
+                { 
+                    data.adItems.Add(foundItem);
+                    Console.WriteLine("Found new item:");
+                    Console.WriteLine(foundItem.id);
+                    Console.WriteLine(foundItem.title);
+                    Console.WriteLine(foundItem.url);
+                    Console.WriteLine("\n");
                 }
             }
-            */
-
-            //Click write message button
-            //viewad - contact - button
-
         }
 
+        private void writeMessagesToSeller()
+        {
+
+        }
 
         public void reportAds(Action<List<AdItem>> callback)
         {
-            callback(items);
+            callback(data.adItems);
         }
 
-        public string[] getAds()
+        public List<AdItem> getAdItems()
         {
-            var ads = new List<string>();
-            foreach(var item in items){
-                ads.Add(item.title);
-            }
-            return ads.ToArray();
+            return data.adItems;
         }
 
-        public void stopDriver()
+        public void stop()
         {
+            isRunning = false;
             driver.Quit();
-            Console.WriteLine("Quit Successfully");
         }
 
         /// <summary>

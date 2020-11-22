@@ -8,6 +8,9 @@ namespace BotAnzeigen.Core.model
 {
     public class AdItem
     {
+        public string id;
         public string title;
+        public string url;
+        public bool messageSent = false;
     }
 }

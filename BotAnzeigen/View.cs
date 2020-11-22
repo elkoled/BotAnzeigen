@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
 using BotAnzeigen.Core.service;
+using BotAnzeigen.Core.model;
 using Newtonsoft.Json;
 
 namespace BotAnzeigen
@@ -9,8 +11,8 @@ namespace BotAnzeigen
     public partial class View : Form
     {
         private BotService bot;
-        private SaveData saveData;
-        private string saveDataPath = "saveData.json";
+        private Data data = new Data();
+        private string saveDataFile = "saveData.json";
 
         public View()
         {
@@ -22,21 +24,20 @@ namespace BotAnzeigen
             backgroundWorker1.WorkerSupportsCancellation = true;
             backgroundWorker1.RunWorkerCompleted += worker_RunWorkerCompleted;
 
-            saveData = new SaveData();
-
             try
             {
-                if (System.IO.File.Exists(saveDataPath))
+                if (System.IO.File.Exists(saveDataFile))
                 {
-                    string saveDataString = System.IO.File.ReadAllText(saveDataPath);
-                    saveData = JsonConvert.DeserializeObject<SaveData>(saveDataString);
+                    string saveDataString = System.IO.File.ReadAllText(saveDataFile);
+                    data = JsonConvert.DeserializeObject<Data>(saveDataString);
                     Console.WriteLine("Loaded Savedata");
                 }
-                txtMessageText.Text = saveData.messageText;
-                txtPassword.Text = saveData.password;
-                txtSearchUrl.Text = saveData.searchUrl;
-                txtUsername.Text = saveData.username;
-                listBoxAdList.DataSource = saveData.ads;
+                txtMessageText.Text = data.messageText;
+                txtPassword.Text = data.password;
+                txtSearchUrl.Text = data.searchUrl;
+                txtUsername.Text = data.username;
+                listBoxAdList.DataSource = getAdItemTitles(data.adItems);
+
             }
             catch
             {
@@ -46,28 +47,37 @@ namespace BotAnzeigen
 
         private void btnStartBot_Click(object sender, EventArgs e)
         {
-            disableInputs();
-            saveData.messageText = txtMessageText.Text;
-            saveData.password = txtPassword.Text;
-            saveData.searchUrl = txtSearchUrl.Text;
-            saveData.username = txtUsername.Text;
-            saveDataToJson();
-            
+            if(txtMessageText.Text!="" && txtPassword.Text!="" && txtSearchUrl.Text!="" && txtUsername.Text!="")
+            {
 
-            backgroundWorker1.RunWorkerAsync();
+            
+                disableInputs();
+                data.messageText = txtMessageText.Text;
+                data.password = txtPassword.Text;
+                data.searchUrl = txtSearchUrl.Text;
+                data.username = txtUsername.Text;
+                saveDataToJson();
+
+                backgroundWorker1.RunWorkerAsync();
+            }
+            else
+            {
+                MessageBox.Show("Alle Felder ausfüllen!", "Was machen Sachen?");
+            }
 
         }
 
         private void btnStopBot_Click(object sender, EventArgs e)
         {
             Console.WriteLine("Stopping Bot, please wait...");
-            bot.stopDriver();
+            btnStopBot.Enabled = false;
+            bot.stop();
             backgroundWorker1.CancelAsync();
         }
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e) 
         {
-            bot = new BotService(txtUsername.Text, txtPassword.Text, txtSearchUrl.Text, txtMessageText.Text);
+            bot = new BotService(data,30);
             bot.run();
 
             //bot = new Bot(txtUsername.Text, txtPassword.Text, txtSearchUrl.Text, txtMessageText.Text);
@@ -78,11 +88,7 @@ namespace BotAnzeigen
             while (!backgroundWorker1.CancellationPending)
             {
                 backgroundWorker1.ReportProgress(0);
-                System.Threading.Thread.Sleep(20000);
-                //saveData.ads = bot.getAds();
-                //backgroundWorker1.ReportProgress(0);
-              
-                //saveDataToJson();
+                System.Threading.Thread.Sleep(2000);
 
             }
             if (backgroundWorker1.CancellationPending)
@@ -97,8 +103,10 @@ namespace BotAnzeigen
         {
             //listBoxAdList
             listBoxAdList.DataSource = null;
-            listBoxAdList.DataSource = bot.getAds();
+            listBoxAdList.DataSource = getAdItemTitles(bot.getAdItems());
             listBoxAdList.SelectedIndex = listBoxAdList.Items.Count - 1;
+            data.adItems = bot.getAdItems();
+            saveDataToJson();
 
         }
 
@@ -110,11 +118,22 @@ namespace BotAnzeigen
 
         private void saveDataToJson()
         {
-            string saveDataString = JsonConvert.SerializeObject(saveData, Formatting.Indented);
+            string saveDataString = JsonConvert.SerializeObject(data, Formatting.Indented);
 
-            System.IO.File.WriteAllText(saveDataPath, saveDataString);
+            System.IO.File.WriteAllText(saveDataFile, saveDataString);
             Console.WriteLine("Saved data");
         }
+
+        private List<String> getAdItemTitles(List<AdItem> adItems)
+        {
+            List<String> adItemTitles = new List<String>();
+            foreach(AdItem item in adItems)
+            {
+                adItemTitles.Add(item.title);
+            }
+
+            return adItemTitles;
+         }
 
         private void disableInputs()
         {
@@ -139,7 +158,7 @@ namespace BotAnzeigen
         private void View_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Console.WriteLine("Stopping Bot, please wait...");
-            bot.stopDriver();
+            bot.stop();
         }
 
         private void View_Load(object sender, EventArgs e)
