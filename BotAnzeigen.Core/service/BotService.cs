@@ -13,7 +13,7 @@ namespace BotAnzeigen.Core.service
     {
         IWebDriver driver;
         Data data;
-        bool isRunning = false;
+
         /// <summary>
         /// 
         /// </summary>
@@ -26,59 +26,18 @@ namespace BotAnzeigen.Core.service
             if (data.updateInterval < 30) this.data.updateInterval = 30;
         }
 
-        public void run()
+        public void start()
         {
-            isRunning = true;
             ChromeOptions options = new ChromeOptions();
             options.AddArguments("disable-blink-features=AutomationControlled");
             driver = new ChromeDriver(AppDomain.CurrentDomain.BaseDirectory, options);
             driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMilliseconds(10);
-
-#warning Maybe check each cycle if still logged in?
-            login();
-            while (isRunning == true)
-            {
-                searchItems();
-                writeMessagesToSeller();
-                Console.WriteLine("Waiting for " + data.updateInterval + "s until next check\n");
-                System.Threading.Thread.Sleep(data.updateInterval*1000);
-            }
-            
         }
 
 
-        private void login()
+        public void searchItems()
         {
-            try
-            {
-                driver.Url = "https://www.ebay-kleinanzeigen.de/m-einloggen.html";
-                fakeWait(10000);
-
-                //Accept cookies
-                driver.FindElement(By.Id("gdpr-banner-accept")).Click();
-                fakeWait(1000);
-
-                //Paste login
-                Console.WriteLine("Filling username");
-                driver.FindElement(By.Id("login-email")).SendKeys(data.username);
-                fakeWait(1000);
-                //Paste pw
-                Console.WriteLine("Filling password");
-                driver.FindElement(By.Id("login-password")).SendKeys(data.password);
-                fakeWait(1000);
-                Console.WriteLine("Logging in");
-                driver.FindElement(By.Id("login-submit")).Click();
-                fakeWait(10000);
-            }
-            catch
-            {
-
-            }
-        }
-
-
-        private void searchItems()
-        {
+            checkLogin();
             Console.WriteLine("Navigating to search URL");
             driver.Url = data.searchUrl;
             fakeWait(10000);
@@ -119,6 +78,59 @@ namespace BotAnzeigen.Core.service
                 }
             }
             if (anyNewItem == false) Console.WriteLine("-> No new items");
+
+            writeMessagesToSeller();
+        }
+
+
+        private void checkLogin()
+        {
+            Console.WriteLine("Checking login...");
+            driver.Url = "https://www.ebay-kleinanzeigen.de/m-einloggen.html";
+            fakeWait(10000);
+
+            try
+            {
+                //Already registered?
+                driver.FindElement(By.XPath("//*[@class='text-medium text-bold' and @data-gaevent='Login,UserRegistrationBegin']"));
+            }
+            catch (NoSuchElementException)
+            {
+                Console.WriteLine("Already registered");
+                return;
+            }
+            try
+            {
+                fakeWait(1000);
+                //Accept cookies
+                driver.FindElement(By.Id("gdpr-banner-accept")).Click();
+            }
+            catch (NoSuchElementException)
+            {
+                Console.WriteLine("Cookies already accepted");
+            }
+
+            try
+            {
+                fakeWait(1000);
+                //Paste login
+                Console.WriteLine("Filling username");
+                driver.FindElement(By.Id("login-email")).SendKeys(data.username);
+                fakeWait(1000);
+                //Paste pw
+                Console.WriteLine("Filling password");
+                driver.FindElement(By.Id("login-password")).SendKeys(data.password);
+                fakeWait(1000);
+                System.Threading.Thread.Sleep(1000);
+                Console.WriteLine("Logging in");
+                driver.FindElement(By.Id("login-submit")).Click();
+                fakeWait(10000);
+            }
+            catch
+            {
+                Console.WriteLine("Login failed, retrying next time");
+                return;
+            }
         }
 
         private void writeMessagesToSeller()
@@ -154,7 +166,8 @@ namespace BotAnzeigen.Core.service
                     }
                     catch(NoSuchElementException)
                     {
-                        Console.WriteLine("Message box not found");
+                        Console.WriteLine("Message box not found, retrying next time");
+                        return;
                     }
                     fakeWait(1000);
                     try
@@ -167,10 +180,12 @@ namespace BotAnzeigen.Core.service
                     }
                     catch(NoSuchElementException)
                     {
-                        Console.WriteLine("Button not found");
+                        Console.WriteLine("Button not found, retrying next time");
+                        return;
                     }
                     fakeWait(2000);
-                    Console.WriteLine("Successfully sent message!\n");   
+                    Console.WriteLine("Successfully sent message!\n");
+                    System.Threading.Thread.Sleep(2000);
                     //set sent message to true
                     adItem.messageSent = true;
                 }
@@ -185,7 +200,6 @@ namespace BotAnzeigen.Core.service
 
         public void stop()
         {
-            isRunning = false;
             driver.Quit();
         }
 

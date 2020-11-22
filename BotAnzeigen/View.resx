@@ -123,9 +123,10 @@
 3. URL aus Browser kopieren und im Such-URL Feld eintragen
 4. Nachrichtentext eintragen, dieser wird an jede neue Anzeige gesendet
 5. Update Interval in Sekunden eintragen. nach dieser Zeit wird nach neuen Anzeigen gesucht.
-6. Bot starten. 
+6. Bot starten.  
+Achtung: Das Stoppen des Bots kann bis zu "Update Interval" sec. dauern. Im Notfall einfach das Fenster schließen
 
-Einstellungen werden gespeichert. Zum Löschen der Daten die Datei "saveData.json" entfernen.</value>
+Einstellungen werden automatisch gespeichert. Zum Löschen der Daten die Datei "saveData.json" entfernen.</value>
   </data>
   <metadata name="backgroundWorker1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>

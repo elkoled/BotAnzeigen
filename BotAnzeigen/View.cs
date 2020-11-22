@@ -83,23 +83,25 @@ namespace BotAnzeigen
         {
             Console.WriteLine("Stopping Bot, please wait...");
             btnStopBot.Enabled = false;
-            bot.stop();
+            
             backgroundWorker1.CancelAsync();
         }
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e) 
         {
             bot = new BotService(data);
-            bot.run();
+            bot.start();
 
             while (!backgroundWorker1.CancellationPending)
             {
-#warning implement callback
+                bot.searchItems();
                 backgroundWorker1.ReportProgress(0);
-                System.Threading.Thread.Sleep(2000);
+                Console.WriteLine("Waiting for " + data.updateInterval + "s until next check\n");
+                System.Threading.Thread.Sleep(data.updateInterval*1000);
             }
             if (backgroundWorker1.CancellationPending)
             {
+                bot.stop();
                 Console.WriteLine("Bot stopped");
                 e.Cancel = true;
             }
@@ -138,7 +140,7 @@ namespace BotAnzeigen
             List<String> adItemTitles = new List<String>();
             foreach(AdItem item in adItems)
             {
-                adItemTitles.Add(item.title);
+                adItemTitles.Add(item.title + " || ID:" + item.id);
             }
 
             return adItemTitles;
