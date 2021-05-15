@@ -242,7 +242,7 @@ namespace BotAnzeigen
             this.Controls.Add(this.groupBox1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "View";
-            this.Text = "BotAnzeigen";
+            this.Text = "BotAnzeigen v1.0.1";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);

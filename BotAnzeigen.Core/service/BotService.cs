@@ -92,7 +92,7 @@ namespace BotAnzeigen.Core.service
             try
             {
                 //Already registered?
-                driver.FindElement(By.XPath("//*[@class='text-medium text-bold' and @data-gaevent='Login,UserRegistrationBegin']"));
+                driver.FindElement(By.XPath("//*[@class='button' and @data-gaevent='Login,UserRegistrationBegin']"));
             }
             catch (NoSuchElementException)
             {
@@ -164,9 +164,16 @@ namespace BotAnzeigen.Core.service
                     {
                         driver.FindElement(By.XPath("//textarea[@name='message' and @class='viewad-contact-message']")).SendKeys(data.messageText);
                     }
-                    catch(NoSuchElementException)
+                    catch (Exception ex)
                     {
-                        Console.WriteLine("Message box not found, retrying next time");
+                        if (ex is NoSuchElementException)
+                        {
+                            Console.WriteLine("Message box not found, retrying next time");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Unknown error, contact developer");
+                        }
                         return;
                     }
                     fakeWait(1000);
