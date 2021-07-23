@@ -1,8 +1,8 @@
 # BotAnzeigen
-v.1.0.0 
+v.1.0.2
 
 ![screenshot](Screenshot.jpg)
 
 # Requirements
-* Google Chrome v87 or newer
-* .NET Framework 4.7.2 or newer
+* Google Chrome v91
+* .NET Framework 4.7.2
